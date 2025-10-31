@@ -21,7 +21,7 @@ Telegram Username Checker
 Локальная установка
 bash
 # Клонируйте репозиторий
-git clone https://github.com/soft-ux/telegram-username-checker.git
+git clone https://github.com/soft-ux/checkertelegramusernames.git
 
 # Откройте chekertelegramusernames.html в браузере
 open chekertelegramusernames.html
