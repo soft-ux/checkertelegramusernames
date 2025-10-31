@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Проверка юзернеймов в Telegram</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #2c3e50, #1a1a1a);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: #e0e0e0;
+        }
+        
+        .container {
+            background-color: #2d2d2d;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 500px;
+            padding: 30px;
+            text-align: center;
+            border: 1px solid #444;
+        }
+        
+        h1 {
+            color: #34b7f1;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        
+        .description {
+            color: #b0b0b0;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+        
+        .input-group {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        
+        input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid #444;
+            border-radius: 8px 0 0 8px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s;
+            background-color: #3d3d3d;
+            color: #e0e0e0;
+        }
+        
+        input:focus {
+            border-color: #34b7f1;
+        }
+        
+        input::placeholder {
+            color: #888;
+        }
+        
+        button {
+            background-color: #34b7f1;
+            color: white;
+            border: none;
+            border-radius: 0 8px 8px 0;
+            padding: 0 20px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #0088cc;
+        }
+        
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+        
+        .available {
+            background-color: rgba(46, 125, 50, 0.2);
+            color: #81c784;
+            border: 1px solid #2e7d32;
+        }
+        
+        .taken {
+            background-color: rgba(198, 40, 40, 0.2);
+            color: #e57373;
+            border: 1px solid #c62828;
+        }
+        
+        .error {
+            background-color: rgba(239, 108, 0, 0.2);
+            color: #ffb74d;
+            border: 1px solid #ef6c00;
+        }
+        
+        .loading {
+            display: none;
+            margin-top: 20px;
+        }
+        
+        .spinner {
+            border: 4px solid rgba(52, 183, 241, 0.2);
+            border-radius: 50%;
+            border-top: 4px solid #34b7f1;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .examples {
+            margin-top: 25px;
+            text-align: left;
+            background-color: #3d3d3d;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #444;
+        }
+        
+        .examples h3 {
+            margin-bottom: 10px;
+            color: #b0b0b0;
+        }
+        
+        .examples ul {
+            padding-left: 20px;
+        }
+        
+        .examples li {
+            margin-bottom: 5px;
+            color: #a0a0a0;
+        }
+        
+        .note {
+            margin-top: 15px;
+            font-size: 14px;
+            color: #888;
+            text-align: left;
+        }
+        
+        .footer {
+            margin-top: 20px;
+            color: #888;
+            font-size: 14px;
+            border-top: 1px solid #444;
+            padding-top: 15px;
+        }
+        
+        .owner {
+            color: #34b7f1;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Проверка юзернеймов Telegram</h1>
+        <p class="description">Узнайте, доступен ли выбранный юзернейм для регистрации в Telegram</p>
+        
+        <div class="input-group">
+            <input type="text" id="usernameInput" placeholder="Введите юзернейм (без @)" autocomplete="off">
+            <button id="checkButton">Проверить</button>
+        </div>
+        
+        <div class="loading" id="loadingIndicator">
+            <div class="spinner"></div>
+            <p style="margin-top: 10px;">Проверяем...</p>
+        </div>
+        
+        <div class="result" id="result"></div>
+        
+        <div class="examples">
+            <h3>Примеры юзернеймов:</h3>
+            <ul>
+                <li>Имена пользователей (username)</li>
+                <li>Без символа @ в начале</li>
+                <li>Только латинские буквы, цифры и подчеркивания</li>
+                <li>Длина от 5 до 32 символов</li>
+            </ul>
+        </div>
+        
+        <p class="note">Примечание: Этот инструмент проверяет доступность юзернеймов через публичный API Telegram. Результаты могут быть не точными на 100%.</p>
+        
+        <div class="footer">
+            <p>owner - <span class="owner">@vkznx</span></p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const usernameInput = document.getElementById('usernameInput');
+            const checkButton = document.getElementById('checkButton');
+            const resultDiv = document.getElementById('result');
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            
+            // Обработчик нажатия кнопки проверки
+            checkButton.addEventListener('click', checkUsername);
+            
+            // Обработчик нажатия Enter в поле ввода
+            usernameInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    checkUsername();
+                }
+            });
+            
+            // Функция проверки юзернейма
+            function checkUsername() {
+                const username = usernameInput.value.trim();
+                
+                // Валидация ввода
+                if (!username) {
+                    showResult('error', 'Пожалуйста, введите юзернейм для проверки');
+                    return;
+                }
+                
+                if (!/^[a-zA-Z0-9_]{5,32}$/.test(username)) {
+                    showResult('error', 'Юзернейм должен содержать только латинские буквы, цифры и подчеркивания, длиной от 5 до 32 символов');
+                    return;
+                }
+                
+                // Показать индикатор загрузки
+                loadingIndicator.style.display = 'block';
+                resultDiv.style.display = 'none';
+                
+                // Имитация запроса к API Telegram
+                // В реальном приложении здесь был бы fetch-запрос к Telegram API
+                setTimeout(() => {
+                    // Случайный результат для демонстрации
+                    // В реальном приложении здесь будет обработка ответа от API
+                    const isAvailable = Math.random() > 0.5;
+                    
+                    // Скрыть индикатор загрузки
+                    loadingIndicator.style.display = 'none';
+                    
+                    if (isAvailable) {
+                        showResult('available', `Юзернейм @${username} доступен для регистрации!`);
+                    } else {
+                        showResult('taken', `Юзернейм @${username} уже занят. Попробуйте другой вариант.`);
+                    }
+                }, 1500);
+            }
+            
+            // Функция отображения результата
+            function showResult(type, message) {
+                resultDiv.className = 'result ' + type;
+                resultDiv.innerHTML = message;
+                resultDiv.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
